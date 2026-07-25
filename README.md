@@ -1,4 +1,6 @@
-# SyncTranslate — Bilingual Web Page Translator
+# SyncWebTranslate — Bilingual Web Page Translator
+
+[GitHub](https://github.com/maxlutsyshynmat/SyncWebTranslate)
 
 A **Violentmonkey / Tampermonkey** userscript that transforms any web page into a **side-by-side bilingual view**: the original text on the left, the machine translation on the right.
 
@@ -16,7 +18,7 @@ A **Violentmonkey / Tampermonkey** userscript that transforms any web page into 
 ## Installation
 
 1. Install [Violentmonkey](https://violentmonkey.github.io/) or [Tampermonkey](https://www.tampermonkey.net/) for your browser.
-2. Create a new script and paste the contents of [`userscript.js`](./userscript.js), or install directly from the `.user.js` URL if hosted.
+2. Create a new script and paste the contents of [`userscript.js`](./userscript.js), or install directly from the raw URL: `https://raw.githubusercontent.com/maxlutsyshynmat/SyncWebTranslate/main/userscript.js`
 3. The script runs automatically on all HTTP/HTTPS pages (`@match http://*/*` and `@match https://*/*`).
 
 ## Usage
