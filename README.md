@@ -90,3 +90,13 @@ If you modify this software and distribute it, or run a modified version as a ne
 you must make the corresponding source code available under the same license.
 
 See the LICENSE file for details.
+
+## Privacy
+
+This userscript reads text from the current web page and may send selected paragraphs
+to the configured translation provider.
+
+By default, it sends only visible paragraph text. It does not intentionally send
+password fields, form inputs, cookies, local storage, or authentication tokens.
+
+You can configure the translation provider in the script settings.
