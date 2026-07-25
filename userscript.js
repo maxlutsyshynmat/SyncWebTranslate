@@ -11,6 +11,7 @@
 // @grant        GM_addStyle
 // @grant        GM_registerMenuCommand
 // @connect      translate.googleapis.com
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // ==/UserScript==
 
 (function () {
