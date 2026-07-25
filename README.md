@@ -62,4 +62,10 @@ Works in all modern browsers with Violentmonkey or Tampermonkey. Tested on Chrom
 
 ## License
 
-MIT
+This project is licensed under the GNU Affero General Public License v3.0 or later.
+
+You may use, modify, distribute, and sell this software, including commercially.
+If you modify this software and distribute it, or run a modified version as a network service,
+you must make the corresponding source code available under the same license.
+
+See the LICENSE file for details.
