@@ -18,13 +18,13 @@ A **Violentmonkey / Tampermonkey** userscript that transforms any web page into 
 ## How It Looks 🎯
 
 ```
-┌─────────────────────────── ☝️ synchronized scroll ──────────────────────┐
+┌─────────────────────────── ☝️ synchronized scroll ─────────────────────┐
 │ ┌─────────────────────────────┬───────────────────────────────────────┐ │
-│ │  📖 Original block 1        │  🌐 Translated block 1                │ │
+│ │  📖 Original block 1        │  🌐 Translated block 1               │ │
 │ ├─────────────────────────────┼───────────────────────────────────────┤ │
-│ │  📖 Original block 2        │  🌐 Translated block 2                │ │
+│ │  📖 Original block 2        │  🌐 Translated block 2               │ │
 │ ├─────────────────────────────┼───────────────────────────────────────┤ │
-│ │  📖 Original block 3        │  🌐 Translated block 3                │ │
+│ │  📖 Original block 3        │  🌐 Translated block 3               │ │
 │ └─────────────────────────────┴───────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
