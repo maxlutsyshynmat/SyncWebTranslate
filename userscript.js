@@ -1,9 +1,12 @@
 // ==UserScript==
-// @name         Side-by-side Web Page Translator / Original + Translation
-// @namespace    https://violentmonkey.github.io/
+// @name         SyncWebTranslate — Bilingual Web Page Translator
+// @namespace    https://github.com/maxlutsyshynmat/SyncWebTranslate
 // @version      1.0.1
 // @description  Synchronous web page translation: original on the left, translation on the right, shared scroll, preserves page appearance as much as possible.
-// @author       ChatGPT
+// @author       Max L.
+// @homepageURL  https://github.com/maxlutsyshynmat/SyncWebTranslate
+// @supportURL   https://github.com/maxlutsyshynmat/SyncWebTranslate/issues
+// @license      AGPL-3.0-or-later
 // @match        http://*/*
 // @match        https://*/*
 // @run-at       document-idle
@@ -11,7 +14,6 @@
 // @grant        GM_addStyle
 // @grant        GM_registerMenuCommand
 // @connect      translate.googleapis.com
-// SPDX-License-Identifier: AGPL-3.0-or-later
 // ==/UserScript==
 
 (function () {
@@ -21,10 +23,7 @@
     targetLang: localStorage.getItem('vmBilingualTranslator.targetLang') || 'ru',
     sourceLang: 'auto',
 
-    /**
-     * true  — translate automatically after page load.
-     * false — translate only via button.
-     */
+    /** true — translate automatically after page load; false — translate only via button. */
     autoStart: false,
 
     translateSelector: [
@@ -125,6 +124,7 @@
     }, 800);
   }
 
+  /** Inject bilingual-view CSS into the page. */
   function injectStyles() {
     const css = `
       :root {
@@ -280,6 +280,7 @@
     }
   }
 
+  /** Create and mount the floating UI panel (language select, action buttons, status). */
   function createUI() {
     const ui = document.createElement('div');
     ui.className = 'vm-bilingual-translator-ui';
@@ -395,6 +396,7 @@
     }
   }
 
+  /** Register Violentmonkey/Tampermonkey menu commands. */
   function registerMenuCommands() {
     if (typeof GM_registerMenuCommand !== 'function') {
       return;
@@ -421,6 +423,7 @@
     });
   }
 
+  /** Register Alt+Shift+T hotkey to toggle translation. */
   function registerHotkeys() {
     window.addEventListener('keydown', function (event) {
       if (event.altKey && event.shiftKey && event.code === 'KeyT') {
@@ -435,6 +438,7 @@
     }, true);
   }
 
+  /** Hide the floating UI panel. */
   function hideUI() {
     const ui = state.ui;
 
@@ -446,6 +450,7 @@
     localStorage.setItem('vmBilingualTranslator.uiHidden', '1');
   }
 
+  /** Show the floating UI panel. */
   function showUI() {
     const ui = state.ui;
 
@@ -457,6 +462,7 @@
     localStorage.setItem('vmBilingualTranslator.uiHidden', '0');
   }
 
+  /** Toggle the floating UI panel visibility. */
   function toggleUI() {
     const ui = state.ui;
 
@@ -471,6 +477,11 @@
     }
   }
 
+  /**
+   * Start (or continue) translation of the page.
+   * @param {Object} [options]
+   * @param {boolean} [options.onlyNew] — If true, only translate blocks added since last run.
+   */
   function startTranslation(options) {
     options = options || {};
 
@@ -513,6 +524,11 @@
     ensureMutationObserver();
   }
 
+  /**
+   * Restore the page to its original single-column state.
+   * @param {Object} [options]
+   * @param {boolean} [options.silent] — If true, don't update the status bar.
+   */
   function restorePage(options) {
     options = options || {};
 
@@ -564,6 +580,7 @@
     }
   }
 
+  /** Set up a MutationObserver to auto-translate dynamically added content (SPAs, infinite scroll). */
   function ensureMutationObserver() {
     if (state.observer || !document.body) {
       return;
@@ -611,6 +628,7 @@
     });
   }
 
+  /** Find candidate block elements eligible for translation under the given root. */
   function findTranslatableHosts(root) {
     const candidates = Array.prototype.slice.call(
       root.querySelectorAll(CONFIG.translateSelector)
@@ -619,6 +637,7 @@
     return candidates.filter(isGoodCandidate);
   }
 
+  /** Check whether a DOM element is a valid candidate for translation. */
   function isGoodCandidate(element) {
     if (!(element instanceof HTMLElement)) {
       return false;
@@ -669,6 +688,7 @@
     return true;
   }
 
+  /** Return true if the element contains a nested translatable block (to avoid double-wrapping). */
   function hasNestedTranslatableBlock(element) {
     const nested = Array.prototype.slice.call(
       element.querySelectorAll(CONFIG.translateSelector)
@@ -704,6 +724,10 @@
     return false;
   }
 
+  /**
+   * Split a host element into two columns (original + translation) and start translation.
+   * @returns {number} Number of text nodes queued for translation.
+   */
   function processHost(host, runId) {
     if (!(host instanceof HTMLElement)) {
       return 0;
@@ -769,6 +793,7 @@
     return textNodes.length;
   }
 
+  /** Remove IDs, event handlers, media, and form controls from the translation clone. */
   function sanitizeTranslationClone(root) {
     if (root instanceof Element) {
       root.removeAttribute('id');
@@ -847,6 +872,7 @@
     }
   }
 
+  /** Walk the DOM and return all translatable text nodes under the given root. */
   function collectTextNodes(root) {
     const nodes = [];
 
@@ -885,6 +911,7 @@
     return nodes;
   }
 
+  /** Translate a single text node via Google Translate and replace its value. */
   async function translateTextNode(node, runId) {
     const raw = node.nodeValue || '';
     const split = splitOuterWhitespace(raw);
@@ -924,6 +951,7 @@
     }
   }
 
+  /** Increment the done counter and update the UI status. */
   function markDone(runId) {
     if (state.runId !== runId) {
       return;
@@ -933,6 +961,7 @@
     updateProgress();
   }
 
+  /** Translate a single text string (with cache lookup). */
   async function translateText(text) {
     const cached = getCachedTranslation(text);
 
@@ -956,6 +985,7 @@
     return translated;
   }
 
+  /** Fetch JSON from a URL using GM_xmlhttpRequest or native fetch as fallback. */
   function requestJson(url) {
     return new Promise(function (resolve, reject) {
       const gmRequest = typeof GM_xmlhttpRequest === 'function'
@@ -1006,6 +1036,7 @@
     });
   }
 
+  /** Extract the translated text from a Google Translate API response. */
   function extractGoogleTranslation(json) {
     if (!Array.isArray(json)) {
       return '';
@@ -1030,6 +1061,7 @@
     return result;
   }
 
+  /** Enqueue a translation task to limit concurrent requests. */
   function enqueueRequest(task) {
     return new Promise(function (resolve, reject) {
       requestQueue.push({
@@ -1042,6 +1074,7 @@
     });
   }
 
+  /** Process pending requests up to the max parallel limit. */
   function pumpQueue() {
     while (
       activeRequests < CONFIG.maxParallelRequests &&
@@ -1061,6 +1094,7 @@
     }
   }
 
+  /** Look up a cached translation (memory → localStorage). */
   function getCachedTranslation(text) {
     const key = getCacheKey(text);
 
@@ -1088,6 +1122,7 @@
     }
   }
 
+  /** Store a translation result in cache (memory + localStorage for short texts). */
   function setCachedTranslation(text, translated) {
     const key = getCacheKey(text);
 
@@ -1108,6 +1143,7 @@
     }
   }
 
+  /** Build a deterministic cache key from text + language pair. */
   function getCacheKey(text) {
     return CONFIG.cachePrefix +
       CONFIG.sourceLang +
@@ -1117,6 +1153,7 @@
       hashString(text);
   }
 
+  /** Fowler–Noll–Vo (FNV-1a) hash for cache keys. */
   function hashString(str) {
     let hash = 2166136261;
 
@@ -1128,6 +1165,7 @@
     return String((hash >>> 0).toString(36)) + '-' + String(str.length);
   }
 
+  /** Check whether an element is visually rendered (display, visibility, opacity, rects). */
   function isVisible(element) {
     const style = window.getComputedStyle(element);
 
@@ -1152,11 +1190,13 @@
     return true;
   }
 
+  /** Get an element's text content normalized (single spaces, trimmed). */
   function getNormalizedText(element) {
     const text = element.innerText || element.textContent || '';
     return text.replace(/\s+/g, ' ').trim();
   }
 
+  /** Return true if the text node content is worth translating. */
   function isTranslatableText(text) {
     const value = text.trim();
 
@@ -1183,14 +1223,14 @@
     return true;
   }
 
+  /** Return true if text contains at least one human-language letter. */
   function containsHumanLetters(text) {
-    /**
-     * Without \\p{L} to avoid SyntaxError in older engines.
-     * Latin, Cyrillic, Greek, some European letters, CJK, Japanese, Korean.
-     */
+    // Without \\p{L} to avoid SyntaxError in older engines.
+    // Latin, Cyrillic, Greek, some European letters, CJK, Japanese, Korean.
     return /[A-Za-zА-Яа-яЁё\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF]/.test(text);
   }
 
+  /** Return true if the text is likely code, markup, or data rather than human language. */
   function looksLikeTechnicalGarbage(text) {
     const value = text.trim();
 
@@ -1217,6 +1257,7 @@
     return false;
   }
 
+  /** Split text into leading whitespace, core content, and trailing whitespace. */
   function splitOuterWhitespace(text) {
     const match = text.match(/^(\s*)([\s\S]*?)(\s*)$/);
 
@@ -1235,6 +1276,7 @@
     };
   }
 
+  /** Update the UI status bar with current progress. */
   function updateProgress() {
     if (!state.total) {
       setStatus('ready');
@@ -1247,12 +1289,14 @@
     setStatus(state.done + '/' + state.total + ' · ' + percent + '%' + errorSuffix);
   }
 
+  /** Set the status bar text. */
   function setStatus(text) {
     if (state.statusEl) {
       state.statusEl.textContent = text;
     }
   }
 
+  /** Escape HTML special characters for safe insertion. */
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, '&amp;')
