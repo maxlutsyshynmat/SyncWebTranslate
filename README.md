@@ -26,15 +26,15 @@ A **Violentmonkey / Tampermonkey** userscript that transforms any web page into 
 3. Select your target language from the dropdown.
 4. The page will be split into two columns: original (left) and translated (right).
 5. Scroll normally — both sides stay synced.
-6. Click **Откат** (Restore) to return the page to its original single-column state.
-7. Click **Новые** (New) to translate blocks added dynamically after the initial translation.
+6. Click **Restore** to return the page to its original single-column state.
+7. Click **New** to translate blocks added dynamically after the initial translation.
 
 ### Menu Commands
 
 The script also registers Violentmonkey menu commands:
-- **Перевести страницу в две колонки** — Start translation
-- **Вернуть страницу как было** — Restore original view
-- **Перевести новые блоки** — Translate newly added blocks
+- **Translate page to two columns** — Start translation
+- **Restore page to original** — Restore original view
+- **Translate new blocks** — Translate newly added blocks
 
 ## How It Works
 
